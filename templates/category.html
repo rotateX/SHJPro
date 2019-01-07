@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<script>
+    // 标签颜色更改
+    $(function () {
+        var a = {{ category_id }}
+        // console.log(a);
+        $("#category"+a).addClass("active");
+        $(".top-nav ul li").click(function () {
+            $(this).addClass("active").siblings().removeClass("active");
+        });
+    });
+</script>
+<div class="blog">
+    {% for i in content_list %}
+        <div class="blog-top">
+            <div class="col-d" >
+                <!--图片slider开始-->
+                <div class="slider1">
+                    <div class="callbacks_container">
+                        <ul class="rslides" id="slider1">
+                            <li>
+                               <a href={% url 'post' id=i.id %}><img style="width: 100%; height: 100%" alt="" src='/media/{{ i.img }}'></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--图片slider结束-->
+                <div class="blog-in">
+                    <h5><a href={% url 'post' id=i.id %}>{{ i|truncatechars:5 }}</a></h5>
+                    <p>{{ i.content|safe|striptags|truncatechars:25 }}</p>
+                    <ul class="date">
+                        <li><span><a href={% url 'post' id=i.id %}><i></i>  {{ i.comment_num }} 条 评 论</a></span></li>
+                        <li><span><i class="date-in"></i>{{ i.created_time }}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block page_nav %}
+{% if content_list.object_list and p_content.num_pages > 1 %}
+    <div class="pages" style="position: fixed; bottom: 0;">
+        <ul id="page_nav">
+            {% if content_list.has_previous %}
+                <li>
+                    <a class="footer" href="?page={{ content_list.previous_page_number }}">
+                        <i class="fa fa-angle-left"></i>上一页
+                    </a>
+                </li>
+            {% endif %}
+            {% for i in p_content.page_range %}
+                {% if content_list.number == i %}
+                    <li class="active"><a href="?page={{ i }}" style="color: #2B333D">{{ i }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if content_list.has_next %}
+                <li>
+                    <a class="footer" href="?page={{ content_list.next_page_number }}">
+                        下一页&nbsp;&nbsp;<i class="fa fa-angle-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}
+
+
+

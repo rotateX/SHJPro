@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="single">
+        <div class="single-top">
+            <script src={% static "js/responsiveslides.min.js" %}></script>
+            <script type="text/javascript">
+                // window.location.hash = '#comment_mao';
+                $(function () {
+                    // 标签颜色更改
+                    var a = {{ details.category_id }}
+                    {#console.log(a);#}
+                    $("#category"+a).addClass("active");
+                    $(".top-nav ul li").click(function () {
+                        $(this).addClass("active").siblings().removeClass("active");
+                    });
+
+                    // 异步提交评论
+                    $('#comment_form').submit(function(){
+                        $.ajaxSetup({
+                            data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+                        });
+                        // 异步提交
+                        // console.log($(this).serialize());
+                        $.ajax({
+                            cache: false,
+                            type: "POST",
+                            url: "{% url 'get_comments' id=details.id  %}",
+                            data: $(this).serialize(), // 取出#comment_form，序列化表单值
+                            async: true,
+                            success: function (arg) {
+                                if (arg['status'] == 'SUCCESS') {
+                                    // 在页面插入新的评论
+                                    var comment_html =
+                                        '<div  class="comments-top-top">' +
+                                            '<div class="top-comment-right">' +
+                                                '<ul>' +
+                                                    '<li><strong style="color: black">' + arg['name'] + '</strong></li>' +
+                                                    '<li><span>' + arg['update_time'] + '</span></li>' +
+                                                '</ul>' +
+                                                '<p>' + arg['body'] + '</p>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="clear"></div>';
+                                    $('#comment_list').prepend(comment_html);
+                                    $('#comment_num').html(arg['comment_num']);
+                                    // 清空表格内数据
+                                    $("#c_name").val("");
+                                    $("#c_email").val("");
+                                    $("#c_body").val("");
+                                    alert("发送成功！")
+                                    // console.log(arg, comment_num);
+                                }else {
+                                    // 显示错误信息
+                                    console.log(arg);
+                                    alert(arg['message']);
+                                }
+                            },
+                            error: function(arg){
+                                 console.log(arg);
+                            }
+                        });
+                        return false;
+                    });
+                })
+            </script>
+            <h2>{{ details.title }}</h2>
+            <p class="para">{{ details.content|safe }}
+            <span></span></p>
+
+            <div class="comment-grid-top">
+            <h3 id="comment_mao"><span id="comment_num">{{ comment_num }}</span> 条评论</h3>
+                <div id="comment_list">
+                    {% for i in comments %}
+                        <div  class="comments-top-top">
+                            <div class="top-comment-right">
+                                <ul>
+                                    <li><strong style="color: black">{{ i.name }}</strong></li>
+                                    <li><span>{{ i.update_time|date:'Y-m-d H:i:s' }}</span></li>
+                                </ul>
+                                <p>{{ i.body|safe }}</p>
+                            </div>
+                            <div class="clear"> </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 评论分页开始 -->
+
+            <!-- 评论分页结束 -->
+
+            <div class="top-single">
+                <h3>留下足迹</h3>
+                <form id="comment_form" method="post" action="{% url 'get_comments' id=details.id %}">
+                    {% csrf_token %}
+                    <div class="grid-single">
+                        <!-- 填写昵称 -->
+                        <div class="your-single">
+                            <i class="name"> </i>
+                            {{ comment_form.name }}<span id="name_err"></span>
+                            <div class="clear"> </div>
+                        </div>
+                        <!-- 填写邮箱 -->
+                        <div class="your-single">
+                            <i class="email"> </i>
+                            {{ comment_form.email }}<span id="email_err"></span>
+                            <div class="clear"> </div>
+                        </div>
+                    </div>
+                    <!-- 填写评论内容 -->
+                    <div class="grid-single-in">
+                        {{ comment_form.body }}<span id="body_err"></span>
+                        <input type="submit" id="jsStayBtn" value="发  送">
+                    </div>
+
+                    <div class="clear"></div>
+                </form>
+
+            </div>
+            {% if pre_article %}
+                <a class="callbacks_nav callbacks1_nav next" href={% url 'post' id=pre_article.id %}>Next</a>
+            {% endif %}
+            {% if next_article %}
+                <a class="callbacks_nav callbacks1_nav prev" href={% url 'post' id=next_article.id %}>Next</a>
+            {% endif %}
+        </div>
+
+        <div class="single-in">
+            <div class="info">
+                <h3>其他信息</h3>
+                <ul class="likes">
+                    <li><span><i class="like"> </i>{{ details.views }} Views</span></li>
+                    <li><span><i class="dec"> </i>{{ details.created_time }}</span></li>
+                    <li><span><i class="comment"></i>创作年代：{{ details.created_age }}</span></li>
+                </ul>
+            </div>
+
+            <div class="tags">
+                <h3>标签</h3>
+                <ul class="tag">
+                    {% for tag in tags %}
+                        {% if tag == '暂无标签' %}
+                            <li class="none_tag">{{ tag }}</li>
+                        {% else %}
+                            <li><a href="#">{{ tag }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="archive">
+                <h3>阅读排行</h3>
+                <ul class="archive-grid">
+                    {% for top_com in top10 %}
+                        <li>
+                            <span style="display: inline">
+                                <a href="{% url 'post' id=top_com.id %}">{{ top_com.title }}</a>
+                                <img style="display: inline" src="{% static 'images/eye_16px_1101027_easyicon.net.ico' %}"> {{ top_com.views }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="clear"> </div>
+    </div>
+{% endblock %}

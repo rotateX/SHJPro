@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load highlight %}
+{% block content %}
+<div class="search_result_top">
+<h1 align="center" style="margin-top: 20px">搜索结果如下：</h1>
+</div>
+
+<div class="search_result">
+    {% if query %}
+        {% for result in page.object_list %}
+            <div>
+                <a href={% url 'post' id=result.object.id %}>
+                    <h3>{{ forloop.counter }}、{% highlight result.object.title with query %}</h3>
+                </a>
+                <div>
+                    {% highlight result.object.content with query %}
+                </div>
+
+                {% if forloop.counter == page.object_list|length %}
+
+                    {% else %}
+                        <hr>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>啥也没找到</p>
+        {% endfor %}
+
+        {% if page.has_previous or page.has_next %}
+            <div>
+                {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; 上一页{% if page.has_previous %}</a>{% endif %}
+
+                {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}下一页 &raquo;{% if page.has_next %}</a>{% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

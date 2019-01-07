@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="single">
+        <div id="mycategory" style="width: 95%;height:400px;margin:1.5em"></div>
+        <div id="mycomment" style="width: 95%;height:400px;margin:1.5em"></div>
+        <div id="myviews" style="width: 95%;height:100%;margin:1.5em"></div>
+        <script type="text/javascript">
+            // 基于准备好的dom，初始化echarts实例
+            var myCategory = echarts.init(document.getElementById('mycategory'));
+            var myComment = echarts.init(document.getElementById('mycomment'));
+            var myViews = echarts.init(document.getElementById('myviews'));
+            // 文章分类统计饼图
+            var categoryopt = {
+                backgroundColor: 'white',
+                avoidLabelOverlap: true,
+                title: {
+                    text: '文章分类统计',
+                    left: 'center',
+                    top: 10,
+                    textStyle: {
+                        color: '#000'
+                    }
+                },
+                tooltip: {},
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                series: [{
+                    name: '数量',
+                    type: 'pie',
+                    data: []
+                }]
+            };
+            // 评论折线统计图
+            var commentopt = {
+                backgroundColor: 'white',
+                avoidLabelOverlap: true,
+                title: {
+                    text: '7天内评论数量统计',
+                    left: 'center',
+                    top: 10,
+                    textStyle: {
+                        color: '#000'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        axisTick: {
+                            alignWithLabel: true
+                        },
+                        data: []
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '评论',
+                        min: 0,
+                        max: 25,
+                        position: 'left',
+                        axisLabel: {
+                            formatter: '{value} 条'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name:'评论数量',
+                        type:'line',
+                        data: []
+                    }
+                ]
+            };
+            // 访问量统计
+
+
+            // 异步加载数据
+            $.get('getdata/?data=1').done(function (data) {
+                myCategory.setOption({
+                    series: [{
+                        name: '数量',
+                        data: data.categorydata
+                    }]
+                });
+                myComment.setOption({
+                    xAxis: [{
+                        data: data.day_list
+                    }],
+                    series: [{
+                        data: data.commentnum_list
+                    }]
+                });
+            });
+
+            // 使用刚指定的配置项和数据显示图表。
+            myCategory.setOption(categoryopt);
+            myComment.setOption(commentopt);
+            window.onresize = function(){
+                myCategory.resize();
+                myComment.resize();
+            }
+
+        </script>
+    </div>
+{% endblock %}

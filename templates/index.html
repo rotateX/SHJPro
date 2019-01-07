@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <script>
+        $(function () {
+            $("#home").addClass("active");
+            $(".top-nav ul li").click(function () {
+                $(this).addClass("active").siblings().removeClass("active");
+            });
+        });
+    </script>
+    <div class="blog">
+        <img src="{% static 'images/index_img.jpg' %}">
+    </div>
+{% endblock %}

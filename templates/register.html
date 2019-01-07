@@ -1,0 +1,101 @@
+﻿{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href={% static 'UserInfo/css/style.css' %} />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src={% static 'js/jquery.min.js' %}></script>
+        <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            $(function(){
+
+                $('#err').html('');
+
+                $('#register_form').submit(function() {
+                    $.ajaxSetup({
+                        data:{csrfmiddlewaretoken:'{{ csrf_token }}'},
+                    });
+                    // 异步提交
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: "{% url 'AjaxReg'%}",
+                        data: $(this).serialize(),
+                        async: true,
+                        success: function (arg) {
+                            if (arg['status'] === 'SUCCESS') {
+                                alert("注册成功！");
+                                $('input').val('');
+                                window.location.href = '{% url 'home' %}';
+                            }else {
+                                // 显示错误信息
+                                var err = arg['message'];
+                                $('#err').html(err);
+                            }
+                        },
+                        error: function(arg){
+                            console.log(arg);
+                        }
+                    });
+                    return false;
+                });
+            });
+            function validate(){
+                var pwd1 = $('#pwd1').val();
+                var pwd2 = $('#pwd2').val();
+                $("input").focus(function() {
+                    $("#tishi").html("");
+                    $("#err").html("");
+                });
+                if (pwd1.length < 6 || pwd2.length < 6) {
+                    $('#tishi').html('密码长度至少6位');
+                    $("#submit_1").attr("disabled",true);
+                }else {
+                    if (pwd1 === pwd2) {
+                        $("#tishi").html("");
+                        $("#submit_1").attr("disabled",false);
+                    }else {
+                        $('#tishi').html('两次密码不一致');
+                        $("#tishi").css("color","white");
+                        $("#submit_1").attr("disabled",true);
+                    }
+                }
+            }
+        </script>
+        <!-----start-main---->
+        <div class="main">
+            <div class="inset">
+            <div class="social-icons">
+             <div class="clear"></div>
+            </div>
+            </div>
+            <form id="register_form" method="post" action="{% url 'AjaxReg'%}">
+                {% csrf_token %}
+                <div class="lable">
+                    {{ form.username }}
+                    {{ form.email }}
+                    {{ form.password1 }}
+                    {{ form.password2 }}
+                </div>
+                <div class="clear"> </div>
+                <h3>
+                    <span id="tishi"></span>
+                    <span id="err"></span>
+                </h3>
+                <div class="submit">
+                    <input id="submit_1" type="submit" value="注 册">
+{#                    <input  type="submit" value="注 册">#}
+                </div>
+                <div class="clear"> </div>
+            </form>
+         </div>
+        <!-----//end-main---->
+
+        <!-----start-copyright---->
+        <div class="copy-right">
+            <p>不登录 直接浏览<a title="hompage" href={% url 'home' %}>网站首页</a></p>
+        </div>
+    </body>
+</html>

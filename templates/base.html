@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>山海经</title>
+<!-- jQuery-->
+<script src={% static 'js/jquery.min.js' %}></script>
+<script src={% static 'js/responsiveslides.min.js' %}></script>
+{#<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>#}
+<!-- Custom Theme files -->
+<!--theme-style-->
+<link rel="stylesheet" type="text/css" media="all" href={% static 'css/style.css' %} />
+<link rel="stylesheet" type="text/css" href="{% static 'css/code.css' %}">
+
+<!--//theme-style-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="山海经" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!--fonts-->
+{#<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900' rel='stylesheet' type='text/css'>#}
+<!--//fonts-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="shortcut icon" href="{%static "images/favicon.ico" %}" />
+<script src={% static 'js/echarts.js' %}></script>
+</head>
+<body>
+	<div class="header">
+	<!--左侧边栏开始-->
+		<div class="header-left">
+            <div class="search bar7">
+                <form action="{% url 'haystack_search'%}">
+                    <input name="q" type="text" placeholder="请输入您要搜索的内容..." required oninvalid="setCustomValidity('输入内容哦');" oninput="setCustomValidity('');"/>
+                    <button type="submit"></button>
+                </form>
+            </div>
+
+			<div class="top-nav">
+				<ul>
+                    <li id="home"><a href={% url 'home' %} >首页</a></li>
+                    <li id="category1"><a class="black" href={% url 'category' id=1 %}>神话志</a></li>
+                    <li id="category2"><a class="black1" href={% url 'category' id=2 %}>异兽录</a></li>
+                    <li id="category3"><a class="black2" href={% url 'category' id=3 %}>怪谈论</a></li>
+                    <li id="category4"><a class="black3" href={% url 'category' id=4 %}>奇人异事</a></li>
+                    <li id="category5"><a class="black3" href={% url 'category' id=5 %}>金石志</a></li>
+				</ul>
+			</div>
+
+			<ul class="social-in">
+				<li><a style="color: whitesmoke" href={% url 'register' %}>注册</a></li>
+{#				<li><a href="#"><i class="twitter"> </i></a></li>#}
+{#				<li><a href="#"><i class="pin"> </i></a></li>#}
+{#				<li><a href="#"><i class="dribble"> </i></a></li>#}
+{#				<li><a href="#"><i class="behance"> </i></a></li>#}
+			</ul>
+			<p class="footer-class"><a href={% url 'date_echarts' %}>站点信息</a></p>
+		</div>
+		<!--左侧边栏结束-->
+		<!--顶部栏开始-->
+		<div class="header-top">
+            <div class="top-search-bar7">
+                <form method="get" action="{% url 'haystack_search' %}">
+                    <input type="text" name="q" placeholder="请输入您要搜索的内容..." required oninvalid="setCustomValidity('输入内容哦');" oninput="setCustomValidity('');"/>
+                    <button type="submit"></button>
+                </form>
+            </div>
+			<div class="top-nav-in">
+			<span class="menu"><img alt="" src={% static "images/menu.png" %}> </span>
+				<ul >
+                    <li id="home" ><a href={% url 'home' %} >首页</a></li>
+                    <li id="category1"><a class="black" href={% url 'category' id=1 %}>神话志</a></li>
+                    <li id="category2"><a class="black1" href={% url 'category' id=2 %}>异兽录</a></li>
+                    <li id="category3"><a class="black2" href={% url 'category' id=3 %}>怪谈论</a></li>
+                    <li id="category4"><a class="black3" href={% url 'category' id=4 %}>奇人异事</a></li>
+                    <li id="category5"><a class="black3" href={% url 'category' id=5 %}>金石志</a></li>
+                </ul>
+
+			</div>
+			<div class="clear"> </div>
+
+		</div>
+        <!--顶部栏结束-->
+        <!--内容开始-->
+		<div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <!--内容结束-->
+		<div class="clear"> </div>
+        <div class="page-list">
+            {% block page_nav %}
+            {% endblock %}
+        </div>
+        <!--内容结束-->
+		<div class="clear"> </div>
+        <div class="go-top">
+            <div class="arrow"></div>
+            <div class="stick"></div>
+        </div>
+
+		<p class="footer-class-in"><a href={% url 'date_echarts' %}>站点信息</a></p>
+	</div>
+    <script>
+        <!--显示和隐藏 menu-->
+        $("span.menu").click(function(){
+            $(".top-nav-in ul").slideToggle(500, function(){
+            });
+        });
+        <!--显示和隐藏 go top-->
+        $(window).scroll(function () {
+            var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+            //console.log(scrollTop)
+            // if ($(window).scrollTop() > 300)
+            if (scrollTop > 300)
+                $('div.go-top').show();
+            else
+                $('div.go-top').hide();
+        });
+        $('div.go-top').click(function () {
+            $('html, body').animate({scrollTop: 0}, 500);
+        });
+    </script>
+</body>
+</html>
